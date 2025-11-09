@@ -4,7 +4,8 @@ pipeline {
         AWS_REGION = 'us-east-2'
         AWS_ACCOUNT_ID = '319994344936'
         ECR_REPO = 'summarizer_app'
-        IMAGE_TAG = "${env.BUILD_NUMBER}"
+        IMAGE_TAG = "latest"
+        COMPOSE_PROJECT_NAME = 'agentic_app'
         IMAGE_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}"
     }
     stages {
@@ -23,7 +24,7 @@ pipeline {
                 }
             }
         }
-        stage('Build Docker Image'){
+        stage('Build Docker Image'){ //{COMPOSE_PROJECT_NAME}-{service_name}:tag
             steps {
                 echo "Building Docker Image: ${IMAGE_URI}"
                 sh '''
@@ -36,7 +37,7 @@ pipeline {
             steps {
                 echo "Tagging image for ECR: ${IMAGE_URI}"
                 sh '''
-                docker tag agentic_app-agentic_app_summarizer:latest ${IMAGE_URI}
+                docker tag ${COMPOSE_PROJECT_NAME}-agentic_app_summarizer:latest ${IMAGE_URI}
                 docker images | grep ${ECR_REPO}
                 '''
             }
