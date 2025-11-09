@@ -28,7 +28,7 @@ pipeline {
                 echo "Building Docker Image: ${IMAGE_URI}"
                 sh '''
                 docker compose build --no-cache
-                dcokcer images | grep agnetic-app-summarizer
+                docker images | grep agnetic-app-summarizer
                 ''' 
             }
         }
