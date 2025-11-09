@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  agentic-app-summarizer:
+    build:
+      context: .
+    platform: linux/amd64
+    container_name: agentic_app_summarizer
+    ports:
+      - "8000:8000" #Maps host port 8000 to container port 8000
+    #env_file: #Make them available to your Python scripts via os.getenv()
+      #- .env
+    environment:
+    #Docker Compose automatically loads .env (from the same directory 
+    #as docker-compose.yml) before parsing your compose file.
+    #So ${OPENAI_API_KEY} in your YAML will expand to ytughxxxxx.
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-} 

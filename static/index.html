@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Text Summarizer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .glass-effect {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .char-counter {
+            transition: color 0.3s ease;
+        }
+        .loading {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-white mb-4">
+                <i class="fas fa-robot mr-3"></i>AI Text Summarizer
+            </h1>
+            <p class="text-white/80 text-lg">Transform long texts into concise, intelligent summaries powered by GPT-4o</p>
+        </div>
+
+        <!-- Main Interface -->
+        <div class="max-w-6xl mx-auto">
+            <div class="glass-effect rounded-2xl p-8 shadow-2xl">
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- Input Section -->
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-xl font-semibold text-white flex items-center">
+                                <i class="fas fa-edit mr-2"></i>Input Text
+                            </h2>
+                            <span id="charCounter" class="char-counter text-sm text-white/60">Characters: 0</span>
+                        </div>
+                        
+                        <textarea 
+                            id="inputText" 
+                            placeholder="Paste your text here... (minimum 50 characters)
+
+Tip: Works great with:
+• News articles
+• Research papers  
+• Long emails
+• Blog posts
+• Meeting notes"
+                            class="w-full h-80 p-4 rounded-lg bg-white/10 text-white placeholder-white/50 border border-white/20 focus:border-white/40 focus:outline-none resize-none"
+                            oninput="updateCharCounter()"
+                        ></textarea>
+                        
+                        <div class="flex gap-3">
+                            <button 
+                                id="summarizeBtn"
+                                onclick="summarizeText()" 
+                                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 flex items-center justify-center"
+                            >
+                                <i class="fas fa-magic mr-2"></i>
+                                <span id="btnText">Summarize Text</span>
+                            </button>
+                            <button 
+                                onclick="clearAll()" 
+                                class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-300"
+                            >
+                                <i class="fas fa-trash mr-2"></i>Clear
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Output Section -->
+                    <div class="space-y-4">
+                        <h2 class="text-xl font-semibold text-white flex items-center">
+                            <i class="fas fa-sparkles mr-2"></i>AI Summary
+                        </h2>
+                        
+                        <div 
+                            id="outputText" 
+                            class="w-full h-80 p-4 rounded-lg bg-white/10 text-white border border-white/20 overflow-auto"
+                        >
+                            <div class="text-white/50 italic">Your AI-generated summary will appear here...</div>
+                        </div>
+                        
+                        <div id="status" class="text-sm text-white/70 hidden"></div>
+                    </div>
+                </div>
+
+                <!-- Examples Section -->
+                <div class="mt-8 pt-8 border-t border-white/20">
+                    <h3 class="text-lg font-semibold text-white mb-4 flex items-center">
+                        <i class="fas fa-lightbulb mr-2"></i>Try These Examples
+                    </h3>
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <button onclick="loadExample(0)" class="text-left p-4 bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 hover:border-white/20 transition duration-300">
+                            <div class="text-white font-medium mb-2">Artificial Intelligence</div>
+                            <div class="text-white/60 text-sm">Learn about AI and machine learning concepts...</div>
+                        </button>
+                        <button onclick="loadExample(1)" class="text-left p-4 bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 hover:border-white/20 transition duration-300">
+                            <div class="text-white font-medium mb-2">Climate Change</div>
+                            <div class="text-white/60 text-sm">Understanding global climate patterns...</div>
+                        </button>
+                        <button onclick="loadExample(2)" class="text-left p-4 bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 hover:border-white/20 transition duration-300">
+                            <div class="text-white font-medium mb-2">Internet of Things</div>
+                            <div class="text-white/60 text-sm">Connected devices and smart systems...</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tips Section -->
+                <div class="mt-8 pt-8 border-t border-white/20">
+                    <div class="bg-white/5 rounded-lg p-6">
+                        <h4 class="text-white font-semibold mb-3">💡 Tips for Best Results</h4>
+                        <ul class="text-white/80 text-sm space-y-1">
+                            <li>• Use texts with at least 50 characters</li>
+                            <li>• Works best with articles, reports, and structured content</li>
+                            <li>• For very long texts, the summary will capture key points</li>
+                            <li>• Press Ctrl+Enter in the text box to summarize quickly</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const examples = [
+            `Artificial intelligence (AI) is intelligence demonstrated by machines, in contrast to the natural intelligence displayed by humans and animals. Leading AI textbooks define the field as the study of "intelligent agents": any device that perceives its environment and takes actions that maximize its chance of successfully achieving its goals. Colloquially, the term "artificial intelligence" is often used to describe machines that mimic "cognitive" functions that humans associate with the human mind, such as "learning" and "problem solving". The traditional problems (or goals) of AI research include reasoning, knowledge representation, planning, learning, natural language processing, perception and the ability to move and manipulate objects.`,
+            
+            `Climate change refers to long-term shifts in global or regional climate patterns. Since the mid-20th century, humans have had an unprecedented impact on Earth's climate system, causing change on a global scale. The largest driver of warming is the emission of gases that create a greenhouse effect, of which more than 90% are carbon dioxide and methane. Fossil fuel burning for electricity, heat, and transportation is the primary source of these emissions, with additional contributions from agriculture, deforestation, and manufacturing.`,
+            
+            `The Internet of Things (IoT) describes the network of physical objects—"things"—that are embedded with sensors, software, and other technologies for the purpose of connecting and exchanging data with other devices and systems over the internet. These devices range from ordinary household objects to sophisticated industrial tools. With more than 7 billion connected IoT devices today, experts are expecting this number to grow to 10 billion by 2020 and 22 billion by 2025.`
+        ];
+
+        function updateCharCounter() {
+            const text = document.getElementById('inputText').value;
+            const counter = document.getElementById('charCounter');
+            const count = text.length;
+            
+            counter.textContent = `Characters: ${count}`;
+            
+            if (count >= 50) {
+                counter.className = 'char-counter text-sm text-green-400';
+            } else if (count > 0) {
+                counter.className = 'char-counter text-sm text-yellow-400';
+            } else {
+                counter.className = 'char-counter text-sm text-white/60';
+            }
+        }
+
+        function loadExample(index) {
+            document.getElementById('inputText').value = examples[index];
+            updateCharCounter();
+        }
+
+        function clearAll() {
+            document.getElementById('inputText').value = '';
+            document.getElementById('outputText').innerHTML = '<div class="text-white/50 italic">Your AI-generated summary will appear here...</div>';
+            document.getElementById('status').classList.add('hidden');
+            updateCharCounter();
+        }
+
+        async function summarizeText() {
+            const inputText = document.getElementById('inputText').value.trim();
+            const outputDiv = document.getElementById('outputText');
+            const statusDiv = document.getElementById('status');
+            const btn = document.getElementById('summarizeBtn');
+            const btnText = document.getElementById('btnText');
+
+            if (!inputText) {
+                showStatus('⚠️ Please enter some text to summarize.', 'text-yellow-400');
+                return;
+            }
+
+            if (inputText.length < 50) {
+                showStatus('⚠️ Please enter a longer text (at least 50 characters).', 'text-yellow-400');
+                return;
+            }
+
+            // Show loading state
+            btn.disabled = true;
+            btn.classList.add('opacity-75');
+            btnText.innerHTML = '<i class="fas fa-spinner loading mr-2"></i>Summarizing...';
+            outputDiv.innerHTML = '<div class="text-white/50 italic flex items-center"><i class="fas fa-spinner loading mr-2"></i>AI is analyzing your text...</div>';
+            showStatus('🤖 Processing your request...', 'text-blue-400');
+
+            try {
+                const response = await fetch('/summarize', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text: inputText })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    outputDiv.innerHTML = `<div class="text-white">${data.summary}</div>`;
+                    showStatus('✅ Summary completed successfully!', 'text-green-400');
+                } else {
+                    outputDiv.innerHTML = `<div class="text-red-400">❌ Error: ${data.detail}</div>`;
+                    showStatus('❌ Failed to generate summary.', 'text-red-400');
+                }
+            } catch (error) {
+                outputDiv.innerHTML = `<div class="text-red-400">❌ Connection Error: ${error.message}</div>`;
+                showStatus('❌ Failed to connect to the API.', 'text-red-400');
+            } finally {
+                // Reset button state
+                btn.disabled = false;
+                btn.classList.remove('opacity-75');
+                btnText.innerHTML = '<i class="fas fa-magic mr-2"></i>Summarize Text';
+            }
+        }
+
+        function showStatus(message, className) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `text-sm ${className}`;
+            statusDiv.classList.remove('hidden');
+        }
+
+        // Keyboard shortcuts
+        document.getElementById('inputText').addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                summarizeText();
+            }
+        });
+
+        // Initialize
+        updateCharCounter();
+    </script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+[project]
+name = "agentic-app-summarizer"
+version = "0.0.1"
+description = "AI-powered text summarization API using FastAPI and OpenAI GPT-4o"
+authors = [{ name = "Henok Mengistu", email = "henok.sahilu2006@gmail.com" }]
+requires-python = ">=3.9"
+
+# Production dependencies
+dependencies = [
+    "fastapi==0.115.8",
+    "uvicorn==0.34.0",
+    "openai>=1.0.0",
+    "pydantic>=2.0.0",
+    "python-multipart>=0.0.6",
+]
+
+# Optional (dev/test) dependencies
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "ruff>=0.1.0",
+    "black>=23.0.0",
+    "pytest-asyncio>=0.21.0",
+]
+
+
+[tool.ruff]
+line-length = 88
+target-version = "py38"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = []
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+
+[tool.pytest.ini_options]
+testpaths = ["app/tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+asyncio_mode = "auto"
