@@ -27,7 +27,7 @@ pipeline {
             steps {
                 echo "Building Docker Image: ${IMAGE_URI}"
                 sh '''
-                docker-compose build --no-cache
+                docker compose build --no-cache
                 docker images | grep agentic
                 ''' 
             }
