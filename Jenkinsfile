@@ -36,7 +36,7 @@ pipeline {
             steps {
                 echo "Tagging image for ECR: ${IMAGE_URI}"
                 sh '''
-                docker tag agentic_app-summarizer:latest ${IMAGE_URI}
+                docker tag agentic_app-agentic_app_summarizer:latest ${IMAGE_URI}
                 docker images | grep ${ECR_REPO}
                 '''
             }

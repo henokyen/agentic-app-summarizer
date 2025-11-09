@@ -4,6 +4,9 @@ services:
     build:
       context: .
     platform: linux/amd64
+    #Docker Compose creates images with this naming pattern:
+    #{directory_name}-{service_name}:latest
+    #Your case: agentic_app-agentic-app-summarizer:latest
     container_name: agentic_app_summarizer
     ports:
       - "8000:8000" #Maps host port 8000 to container port 8000
