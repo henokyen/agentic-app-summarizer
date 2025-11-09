@@ -16,7 +16,7 @@ pipeline {
         stage('Setup Environment'){
             steps {
                 script {
-                    echo "Setting up build ennviroments"
+                    echo "Setting up build enviroments"
                     sh '''
                     docker --version
                     '''
@@ -27,8 +27,8 @@ pipeline {
             steps {
                 echo "Building Docker Image: ${IMAGE_URI}"
                 sh '''
-                docker compose build --no-cache
-                docker images | grep agnetic
+                docker-compose build --no-cache
+                docker images | grep agentic
                 ''' 
             }
         }
@@ -36,7 +36,7 @@ pipeline {
             steps {
                 echo "Tagging image for ECR: ${IMAGE_URI}"
                 sh '''
-                docker tag agentic-app-summarizer:latest ${IMAGE_URI}
+                docker tag agentic_app-summarizer:latest ${IMAGE_URI}
                 docker images | grep ${ECR_REPO}
                 '''
             }
