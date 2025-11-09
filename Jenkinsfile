@@ -32,7 +32,7 @@ pipeline {
                 ''' 
             }
         }
-        stage ("Tag Image for ECR"{
+        stage ("Tag Image for ECR"){
             steps {
                 echo "Tagging image for ECR: ${IMAGE_URI}"
                 sh '''
@@ -40,6 +40,6 @@ pipeline {
                 docker images | grep ${ECR_REPO}
                 '''
             }
-        })
+        }
     }
 }
