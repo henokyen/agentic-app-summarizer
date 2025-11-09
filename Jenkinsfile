@@ -19,7 +19,6 @@ pipeline {
                     echo "Setting up build ennviroments"
                     sh '''
                     docker --version
-                    docker compose --version
                     aws --version || echo "AWS CLI not found
                     '''
                 }
