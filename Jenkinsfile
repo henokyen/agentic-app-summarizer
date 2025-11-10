@@ -19,7 +19,17 @@ pipeline {
                 script {
                     echo "Setting up build enviroments"
                     sh '''
+                    # Check if AWS CLI exists, install if not
+                    if ! command -v aws &> /dev/null; then
+                        echo "Installing AWS CLI..."
+                        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+                        unzip awscliv2.zip
+                        sudo ./aws/install
+                    fi
+                    
+                    # Verify installations
                     docker --version
+                    aws --version
                     '''
                 }
             }
@@ -63,6 +73,24 @@ pipeline {
                             aws ecr describe-repositories --repository-names ${ECR_REPOSITORY} --region ${AWS_REGION}
                         '''
                     }
+                }
+            }
+        }
+         stage('Push to ECR') {
+            steps {
+                echo 'Pushing Docker image to ECR...'
+                script {
+                    sh '''
+                        # Push with build number tag
+                        docker push ${IMAGE_URI}:${IMAGE_TAG}
+                        
+                        # Push latest tag
+                        docker push ${IMAGE_URI}:latest
+                        
+                        echo "Successfully pushed images:"
+                        echo "  ${IMAGE_URI}:${IMAGE_TAG}"
+                        echo "  ${IMAGE_URI}:latest"
+                    '''
                 }
             }
         }
