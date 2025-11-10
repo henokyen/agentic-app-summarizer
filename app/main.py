@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
 import os
 from app.openai_client import summerize_text    
@@ -22,9 +22,9 @@ def health_check():
 @app.post("/summarize", response_model=SummarizeResponse)
 def summarize(request: SummarizeRequest):
     try:
-        summary = summerize_text(request.text)
-        return {
-            "summary": summary,
-            } 
+        return StreamingResponse(
+            summerize_text(request.text),
+            media_type="text/plain")
+    
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
