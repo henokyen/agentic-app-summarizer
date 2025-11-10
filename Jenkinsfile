@@ -57,9 +57,8 @@ pipeline {
                     script {
                         sh '''
                             # Login to ECR
-                            aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | \
+                            aws ecr get-login-password --region ${AWS_REGION} | \
                             docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
-                            
                             # Verify ECR repository exists
                             aws ecr describe-repositories --repository-names ${ECR_REPOSITORY} --region ${AWS_REGION}
                         '''
@@ -69,18 +68,13 @@ pipeline {
         }
          stage('Push to ECR') {
             steps {
-                echo 'Pushing Docker image to ECR...'
+                echo 'Pushing Docker image ${IMAGE_URI} to ECR...'
                 script {
                     sh '''
                         # Push with build number tag
-                        docker push ${IMAGE_URI}:${IMAGE_TAG}
-                        
-                        # Push latest tag
-                        docker push ${IMAGE_URI}:latest
-                        
+                        docker push ${IMAGE_URI}
                         echo "Successfully pushed images:"
-                        echo "  ${IMAGE_URI}:${IMAGE_TAG}"
-                        echo "  ${IMAGE_URI}:latest"
+                        echo "  ${IMAGE_URI}"
                     '''
                 }
             }
