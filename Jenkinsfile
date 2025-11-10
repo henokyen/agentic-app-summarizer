@@ -42,5 +42,29 @@ pipeline {
                 '''
             }
         }
+        stage('AWS ECR Login') {
+            steps {
+                echo 'Logging into AWS ECR...'
+                withCredentials([
+                    [
+                        $class: 'AmazonWebServicesCredentialsBinding',
+                        credentialsId: 'aws-credentials', // Jenkins credential ID
+                        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                    ]
+                ]) {
+                    script {
+                        sh '''
+                            # Login to ECR
+                            aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | \
+                            docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+                            
+                            # Verify ECR repository exists
+                            aws ecr describe-repositories --repository-names ${ECR_REPOSITORY} --region ${AWS_REGION}
+                        '''
+                    }
+                }
+            }
+        }
     }
 }
